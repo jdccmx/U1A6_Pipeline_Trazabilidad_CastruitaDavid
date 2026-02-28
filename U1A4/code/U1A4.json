@@ -1,0 +1,139 @@
+[
+    {
+        "id": "f2f4a096da5a7f3a",
+        "type": "tab",
+        "label": "Telemetria USB Arduino",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "a4aaccb265af4112",
+        "type": "serial in",
+        "z": "f2f4a096da5a7f3a",
+        "name": "Arduino USB",
+        "serial": "",
+        "x": 140,
+        "y": 100,
+        "wires": [
+            [
+                "a3c2fc2238573c83",
+                "e6fa2c800ff0fa7d"
+            ]
+        ]
+    },
+    {
+        "id": "a3c2fc2238573c83",
+        "type": "function",
+        "z": "f2f4a096da5a7f3a",
+        "name": "Parse mensaje minimo",
+        "func": "// Entrada ejemplo: \"12345,1\"\n\nlet partes = msg.payload.trim().split(\",\");\n\nif(partes.length >= 2){\n    msg.payload = {\n        timestamp_ms: parseInt(partes[0]),\n        sensor_raw: parseInt(partes[1])\n    };\n    return msg;\n}\n\nreturn null;",
+        "outputs": 1,
+        "x": 370,
+        "y": 100,
+        "wires": [
+            [
+                "e09c21035f065f11",
+                "6c0ef26420f56a42"
+            ]
+        ]
+    },
+    {
+        "id": "e09c21035f065f11",
+        "type": "function",
+        "z": "f2f4a096da5a7f3a",
+        "name": "Convertir a CSV",
+        "func": "let t = msg.payload.timestamp_ms;\nlet s = msg.payload.sensor_raw;\n\nmsg.payload = t + \",\" + s;\n\nreturn msg;",
+        "outputs": 1,
+        "x": 600,
+        "y": 100,
+        "wires": [
+            [
+                "82e8a4b0c72d895c"
+            ]
+        ]
+    },
+    {
+        "id": "82e8a4b0c72d895c",
+        "type": "file",
+        "z": "f2f4a096da5a7f3a",
+        "name": "Guardar CSV",
+        "filename": "C:\\Users\\jdccu\\OneDrive\\Documentos\\Octavo semestre\\Ciberfisica\\registrodatos.csv",
+        "filenameType": "str",
+        "appendNewline": true,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "utf8",
+        "x": 820,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e6fa2c800ff0fa7d",
+        "type": "debug",
+        "z": "f2f4a096da5a7f3a",
+        "name": "Dato crudo",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 350,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "6c0ef26420f56a42",
+        "type": "debug",
+        "z": "f2f4a096da5a7f3a",
+        "name": "Dato estructurado",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 550,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "d62e2eb17c173fec",
+        "type": "inject",
+        "z": "f2f4a096da5a7f3a",
+        "name": "Crear encabezado CSV",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "",
+        "topic": "",
+        "payload": "timestamp_ms,sensor_raw",
+        "payloadType": "str",
+        "x": 560,
+        "y": 320,
+        "wires": [
+            [
+                "82e8a4b0c72d895c"
+            ]
+        ]
+    },
+    {
+        "id": "d21361a68944ea01",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-node-serialport": "2.0.3"
+        }
+    }
+]
